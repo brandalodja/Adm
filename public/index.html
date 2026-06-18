@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AMO Downloader — FB · IG · YT</title>
-<meta name="description" content="Download video YouTube, Instagram, Facebook dalam HD/SD, MP3, atau gambar. Gratis & cepat.">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -36,207 +35,85 @@
     content: '';
     position: fixed;
     inset: 0;
-    background-image:
-      linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    background-image: linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
   }
 
   body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content: ''; position: fixed; inset: 0;
     background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 20px 16px 80px;
-  }
-
+  .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 20px 16px 80px; }
   header { text-align: center; padding: 44px 0 20px; }
 
   .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: rgba(57,255,20,0.07);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 14px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--neon);
-    letter-spacing: 3px;
-    margin-bottom: 18px;
+    display: inline-flex; align-items: center; gap: 7px; background: rgba(57,255,20,0.07);
+    border: 1px solid var(--border); border-radius: 4px; padding: 4px 14px;
+    font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon); letter-spacing: 3px; margin-bottom: 18px;
   }
 
-  .badge-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--neon);
-    animation: blink 1.4s infinite;
-  }
-
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon); animation: blink 1.4s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 
   h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(30px, 7vw, 52px);
-    font-weight: 900;
-    color: var(--neon);
-    text-shadow: 0 0 24px rgba(57,255,20,0.45), 0 0 60px rgba(57,255,20,0.15);
-    letter-spacing: -1px;
-    line-height: 1;
+    font-family: 'Orbitron', sans-serif; font-size: clamp(30px, 7vw, 52px); font-weight: 900; color: var(--neon);
+    text-shadow: 0 0 24px rgba(57,255,20,0.45), 0 0 60px rgba(57,255,20,0.15); letter-spacing: -1px; line-height: 1;
   }
-
   h1 .accent { color: var(--neon2); text-shadow: 0 0 24px rgba(0,245,255,0.45); }
+  .sub { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 3px; margin-top: 10px; }
 
-  .sub {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 3px;
-    margin-top: 10px;
-  }
-
-  .nav-tabs {
-    display: flex;
-    gap: 8px;
-    margin: 20px 0;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
-  }
-
+  .nav-tabs { display: flex; gap: 8px; margin: 20px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
   .nav-btn {
-    background: transparent;
-    border: 1px solid transparent;
-    color: var(--muted);
-    padding: 8px 16px;
-    font-family: 'Share Tech Mono', monospace;
-    cursor: pointer;
-    font-size: 13px;
-    letter-spacing: 1px;
-    transition: all .2s;
-    border-radius: 4px;
+    background: transparent; border: 1px solid transparent; color: var(--muted); padding: 8px 16px;
+    font-family: 'Share Tech Mono', monospace; cursor: pointer; font-size: 13px; letter-spacing: 1px; border-radius: 4px;
   }
-
-  .nav-btn.active {
-    border-color: var(--border-hot);
-    color: var(--neon);
-    background: rgba(57,255,20,0.05);
-  }
+  .nav-btn.active { border-color: var(--border-hot); color: var(--neon); background: rgba(57,255,20,0.05); }
 
   .panel { display: none; }
   .panel.active { display: block; }
 
-  .input-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 14px;
-  }
-
-  .input-card:focus-within {
-    border-color: var(--border-hot);
-    box-shadow: 0 0 24px rgba(57,255,20,0.07);
-  }
-
-  .input-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--neon);
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-    display: block;
-  }
-
+  .input-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 14px; }
+  .input-card:focus-within { border-color: var(--border-hot); box-shadow: 0 0 24px rgba(57,255,20,0.07); }
+  .input-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon); letter-spacing: 2px; margin-bottom: 10px; display: block; }
   .input-row { display: flex; gap: 8px; }
 
   .url-input {
-    flex: 1;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 13px 16px;
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
-    outline: none;
-    min-width: 0;
+    flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 7px;
+    padding: 13px 16px; color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 13px; outline: none; min-width: 0;
   }
 
-  .url-input::placeholder { color: var(--muted); }
-
   .paste-btn {
-    background: rgba(57,255,20,0.09);
-    border: 1px solid var(--border-hot);
-    border-radius: 7px;
-    padding: 0 16px;
-    color: var(--neon);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    cursor: pointer;
-    white-space: nowrap;
+    background: rgba(57,255,20,0.09); border: 1px solid var(--border-hot); border-radius: 7px;
+    padding: 0 16px; color: var(--neon); font-family: 'Share Tech Mono', monospace; font-size: 11px; cursor: pointer; white-space: nowrap;
   }
 
   .fetch-btn {
-    width: 100%;
-    padding: 16px;
-    background: var(--neon);
-    border: none;
-    border-radius: 9px;
-    color: #000;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    cursor: pointer;
-    text-transform: uppercase;
+    width: 100%; padding: 16px; background: var(--neon); border: none; border-radius: 9px; color: #000;
+    font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; cursor: pointer; text-transform: uppercase;
   }
-
   .fetch-btn:disabled { opacity: .45; cursor: not-allowed; }
 
   .loading { display: none; text-align: center; padding: 44px; }
   .loading.show { display: block; }
-  .spinner-ring {
-    width: 44px; height: 44px;
-    border: 2px solid var(--border);
-    border-top-color: var(--neon);
-    border-radius: 50%;
-    animation: spin .75s linear infinite;
-    margin: 0 auto 14px;
-  }
+  .spinner-ring { width: 44px; height: 44px; border: 2px solid var(--border); border-top-color: var(--neon); border-radius: 50%; animation: spin .75s linear infinite; margin: 0 auto 14px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-txt { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--neon); letter-spacing: 3px; }
 
   .error-box {
     display: none; background: rgba(255,0,110,0.07); border: 1px solid rgba(255,0,110,0.28);
-    border-radius: 8px; padding: 14px 18px; margin-top: 14px; font-family: 'Share Tech Mono', monospace;
-    font-size: 12px; color: var(--neon3);
+    border-radius: 8px; padding: 14px 18px; margin-top: 14px; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--neon3);
   }
   .error-box.show { display: block; }
 
-  .result-card {
-    display: none; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-    overflow: hidden; margin-top: 14px;
-  }
+  .result-card { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 14px; }
   .result-card.show { display: block; }
 
-  .media-header { display: flex; gap: 16px; padding: 20px; border-bottom: 1px solid var(--border); }
-  .thumb-wrap { flex-shrink: 0; width: 130px; }
-  .thumb-wrap img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
-  .media-meta { flex: 1; min-width: 0; }
-  .meta-title { font-size: 14px; font-weight: 600; color: #e8ffe8; margin-bottom: 10px; }
-  .meta-platform { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon2); }
+  .media-header { padding: 20px; border-bottom: 1px solid var(--border); }
+  .media-meta { min-width: 0; }
+  .meta-title { font-size: 15px; font-weight: 600; color: #e8ffe8; margin-bottom: 6px; line-height: 1.4; }
+  .meta-platform { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon2); letter-spacing: 1px; }
 
   .section { padding: 20px; border-bottom: 1px solid var(--border); }
   .sec-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
@@ -244,47 +121,33 @@
   .fmt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
   .fmt-card {
     display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 14px 8px;
-    border-radius: 8px; background: var(--bg2); border: 1px solid var(--border); cursor: pointer;
-    font-size: 12px; color: var(--muted); text-align: center;
+    border-radius: 8px; background: var(--bg2); border: 1px solid var(--border); cursor: pointer; font-size: 12px; color: var(--muted); text-align: center;
   }
   .fmt-card.sel { background: rgba(57,255,20,0.09); border-color: var(--neon); color: var(--neon); }
 
-  /* Progress Bar UI */
   .prog-wrap { display: none; margin-bottom: 12px; background: var(--bg2); border: 1px solid var(--border); height: 12px; border-radius: 4px; overflow: hidden; }
   .prog-wrap.show { display: block; }
   .prog-fill { background: linear-gradient(90deg, var(--neon), var(--neon2)); width: 0%; height: 100%; transition: width 0.1s ease; }
 
   .dl-btn {
     width: 100%; padding: 16px; background: transparent; border: 1px solid var(--neon);
-    border-radius: 8px; color: var(--neon); font-family: 'Orbitron', sans-serif; font-size: 13px;
-    font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    border-radius: 8px; color: var(--neon); font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
   }
   .dl-btn:hover { background: rgba(57,255,20,0.1); box-shadow: 0 0 22px rgba(57,255,20,0.2); }
   .dl-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  .preview-box {
-    background: #000; border: 1px dashed var(--border-hot); border-radius: 6px;
-    padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 60px;
-  }
+  .preview-box { background: #000; border: 1px dashed var(--border-hot); border-radius: 6px; padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 60px; }
   .preview-box video { width: 100%; max-height: 360px; border-radius: 4px; }
   .preview-box audio { width: 100%; }
   .preview-box img { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 4px; }
 
   .history-list { display: flex; flex-direction: column; gap: 12px; }
-  .history-item {
-    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
-    padding: 14px; display: flex; gap: 14px; align-items: center;
-  }
+  .history-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; gap: 14px; align-items: center; }
   .history-item:hover { border-color: var(--border-hot); }
-  .history-thumb { width: 80px; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
   .history-info { flex: 1; min-width: 0; }
   .history-title { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .history-date { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; }
-  .history-action-btn {
-    background: rgba(0,245,255,0.08); border: 1px solid var(--neon2); padding: 6px 12px;
-    border-radius: 4px; color: var(--neon2); font-family: 'Share Tech Mono', monospace; font-size: 11px;
-    cursor: pointer;
-  }
+  .history-action-btn { background: rgba(0,245,255,0.08); border: 1px solid var(--neon2); padding: 6px 12px; border-radius: 4px; color: var(--neon2); font-family: 'Share Tech Mono', monospace; font-size: 11px; cursor: pointer; }
   .empty-history { font-family: 'Share Tech Mono', monospace; color: var(--muted); text-align: center; padding: 40px 0; }
 
   footer { text-align: center; padding: 48px 0 0; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 2px; }
@@ -294,9 +157,9 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="badge"><div class="badge-dot"></div> AMOGENZ · DOWNLOADER · v4.1</div>
+    <div class="badge"><div class="badge-dot"></div> AMOGENZ · DOWNLOADER · v4.2</div>
     <h1>AMO<span class="accent">DL</span></h1>
-    <p class="sub">// DIRECT BLOB STREAM ENGINE + CLOUD RECON //</p>
+    <p class="sub">// DIRECT STREAM AUDIO SYNCHRONIZER //</p>
   </header>
 
   <div class="nav-tabs">
@@ -323,9 +186,6 @@
 
     <div id="resultCard" class="result-card">
       <div class="media-header">
-        <div class="thumb-wrap" id="metaThumbWrap">
-          <img id="metaThumb" src="" alt="Thumbnail">
-        </div>
         <div class="media-meta">
           <div class="meta-title" id="metaTitle">Media Title Loading...</div>
           <div class="meta-platform" id="metaPlatform">PLATFORM</div>
@@ -333,7 +193,7 @@
       </div>
 
       <div class="section">
-        <div class="sec-label">⚡ LIVE PREVIEW STREAM (WITH AUDIO HARMONIZER)</div>
+        <div class="sec-label">⚡ LIVE PREVIEW STREAM (AUDIO-VIDEO SYNC)</div>
         <div class="preview-box" id="previewContainer">
           <span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">Select format to render audio/video preview...</span>
         </div>
@@ -353,7 +213,7 @@
 
   <div id="panel-history" class="panel">
     <div class="input-card">
-      <span class="input-label">// GLOBAL CLOUD REALTIME LOGS</span>
+      <span class="input-label">// GLOBAL CLOUD REALTIME LOGS (ANTI-DUPLICATE)</span>
       <div class="history-list" id="historyListContainer">
         <div class="empty-history">FETCHING NETWORK RECORDS...</div>
       </div>
@@ -367,7 +227,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAWPZ6TvJtFZbhksY3pD57SFAYoJGUDyT0",
@@ -382,22 +242,24 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  window.saveToFirebaseHistory = function(title, url, thumbnail, platform) {
+  // LOGIC DETEKSI DUPLIKASI URL DI CLOUD BRAY
+  window.saveToFirebaseHistory = async function(title, url, platform) {
     try {
-      const historyRef = ref(db, 'downloader_history');
-      const newLogRef = push(historyRef);
+      // Buat clean key dari base64 url sumber biar gak duplikat
+      const cleanKey = btoa(url).replace(/=/g, '').replace(/\//g, '_').replace(/\+/g, '-');
+      const logRef = ref(db, `downloader_history/${cleanKey}`);
+      
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       const formattedDate = new Date().toLocaleDateString('id-ID', options) + " WIB";
 
-      set(newLogRef, {
+      await set(logRef, {
         title: title || "Unknown Title",
         url: url,
-        thumbnail: thumbnail || "",
         platform: platform || "unknown",
         timestamp: Date.now(),
         dateStr: formattedDate
       });
-    } catch (e) { console.error("Firebase database error:", e); }
+    } catch (e) { console.error("Firebase Sync Error:", e); }
   };
 
   const historyRef = ref(db, 'downloader_history');
@@ -414,9 +276,7 @@
     sortedList.forEach(item => {
       const itemEl = document.createElement('div');
       itemEl.className = 'history-item';
-      const thumbSrc = item.thumbnail || 'https://placehold.co/160x90/0d1a0d/39FF14?text=AMO+DL';
       itemEl.innerHTML = `
-        <img class="history-thumb" src="${thumbSrc}" alt="thumb">
         <div class="history-info">
           <div class="history-title">${esc(item.title)}</div>
           <div class="history-date">[${item.platform.toUpperCase()}] • ${item.dateStr}</div>
@@ -474,7 +334,7 @@ async function fetchMediaInfo() {
     renderResultCard(data);
     
     if(window.saveToFirebaseHistory) {
-      window.saveToFirebaseHistory(data.title, data.webpage_url || url, data.thumbnail, data.platform);
+      window.saveToFirebaseHistory(data.title, data.webpage_url || url, data.platform);
     }
   } catch (err) { showError("❌ " + err.message); }
   finally { setLoading(false); }
@@ -483,7 +343,6 @@ async function fetchMediaInfo() {
 function renderResultCard(data) {
   document.getElementById('metaTitle').textContent = data.title;
   document.getElementById('metaPlatform').textContent = `PLATFORM: ${(data.platform || 'UNKNOWN').toUpperCase()}`;
-  document.getElementById('metaThumb').src = data.thumbnail || '';
   
   const grid = document.getElementById('fmtGrid');
   grid.innerHTML = "";
@@ -498,7 +357,7 @@ function renderResultCard(data) {
     card.className = `fmt-card ${idx === 0 ? 'sel' : ''}`;
     let icon = "🎬"; let label = "Video HD";
     if (fmt === 'mp3') { icon = "🎵"; label = "Audio MP3"; }
-    else if (fmt === 'video_sd') { icon = "🎞️"; label = "Video Muted/SD"; }
+    else if (fmt === 'video_sd') { icon = "🎞️"; label = "Video SD"; }
     else if (fmt.includes('image')) { icon = "🖼️"; label = "Gambar"; }
 
     card.innerHTML = `<div class="fi">${icon}</div><div class="fb">${fmt.toUpperCase()}</div><div class="fd">${label}</div>`;
@@ -517,29 +376,22 @@ async function selectFormat(fmt, cardEl) {
   cardEl.classList.add('sel');
   
   const previewBox = document.getElementById('previewContainer');
-  previewBox.innerHTML = `<span style="color: var(--neon2); font-size: 11px; font-family: 'Share Tech Mono';">⏳ CONNECTING STREAM SYNC...</span>`;
+  previewBox.innerHTML = `<span style="color: var(--neon2); font-size: 11px; font-family: 'Share Tech Mono';">⏳ CONNECTING SYSTEM SYNC...</span>`;
   
   try {
     const targetUrl = document.getElementById('urlInput').value.trim();
-    
-    // Khusus YouTube Video HD agar ada suaranya di preview, kita fallback ke stream info audio mp3/audio gabungan
-    let formatQuery = fmt;
-    if (currentMediaData.platform === 'youtube' && fmt === 'video_hd') {
-      formatQuery = 'video_sd'; // Mode SD gabungan audio-video terpadu bray
-    }
-
-    const res = await fetch(`/api/download?url=${encodeURIComponent(targetUrl)}&format=${formatQuery}`);
+    const res = await fetch(`/api/download?url=${encodeURIComponent(targetUrl)}&format=${fmt}`);
     const streamData = await res.json();
     
     if(!res.ok || !streamData.url) {
-      previewBox.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ High-res preview restriction. Direct download button still functional.</span>`;
+      previewBox.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ Preview unavailable. Direct download button still functional.</span>`;
       return;
     }
     
     if (fmt === 'mp3') {
       previewBox.innerHTML = `<audio controls src="${streamData.url}" preload="metadata"></audio>`;
     } else if (fmt.includes('image')) {
-      previewBox.innerHTML = `<img src="${streamData.url}" alt="Preview Image">`;
+      previewBox.innerHTML = `<img src="${streamData.url}" alt="Preview">`;
     } else {
       previewBox.innerHTML = `<video controls src="${streamData.url}" preload="metadata" playsinline></video>`;
     }
@@ -548,7 +400,6 @@ async function selectFormat(fmt, cardEl) {
   }
 }
 
-// Fitur BLOB DIRECT DOWNLOADER (Anti Buka Tab Baru)
 async function triggerDownload() {
   if (!currentMediaData || !selectedFormat) return;
 
@@ -558,7 +409,6 @@ async function triggerDownload() {
 
   btn.disabled = true;
   btn.innerHTML = '⏳ INITIALIZING DOWNLOAD BUFFER...';
-  progWrap.class = 'prog-wrap show';
   progWrap.style.display = 'block';
   progFill.style.width = '15%';
 
@@ -566,29 +416,27 @@ async function triggerDownload() {
     const url = document.getElementById('urlInput').value.trim();
     const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&format=${selectedFormat}`);
     const data = await res.json();
-    if (!res.ok || !data.url) throw new Error(data.error || "Gagal memproses file streaming server.");
+    if (!res.ok || !data.url) throw new Error(data.error || "Gagal memproses file streaming.");
 
     progFill.style.width = '45%';
-    btn.innerHTML = '⚡ DOWNLOADING FILE TO LOCAL STORAGE...';
+    btn.innerHTML = '⚡ STREAMING CONTENT DATA TO LOCAL BLOB...';
 
-    // Ambil file asli pakai bypass proxy blob bray
     const fileRes = await fetch(data.url);
-    if (!fileRes.ok) throw new Error("Gagal mengunduh data stream dari CDN utama.");
+    if (!fileRes.ok) throw new Error("Gagal mengunduh stream langsung dari server asal.");
     
     progFill.style.width = '85%';
     const fileBlob = await fileRes.blob();
     const blobUrl = window.URL.createObjectURL(fileBlob);
 
     progFill.style.width = '100%';
-    btn.innerHTML = '📦 INJECTING TO SYSTEM DIRECTORY...';
+    btn.innerHTML = '📦 INJECTING TO SYSTEM TARGET DIRECTORY...';
 
     const a = document.createElement('a');
     a.href = blobUrl;
-    a.download = data.filename || 'amo-download.mp4';
+    a.download = data.filename || 'download.mp4';
     document.body.appendChild(a);
     a.click();
     
-    // Bersihkan memori blob browser
     window.URL.revokeObjectURL(blobUrl);
     document.body.removeChild(a);
 
