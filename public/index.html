@@ -106,6 +106,7 @@
   .result-card.show { display: block; }
 
   .media-header { padding: 20px; border-bottom: 1px solid var(--border); }
+  .media-meta { min-width: 0; }
   .meta-title { font-size: 15px; font-weight: 600; color: #e8ffe8; margin-bottom: 6px; line-height: 1.4; }
   .meta-platform { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon2); letter-spacing: 1px; }
 
@@ -145,8 +146,9 @@
   }
   .play-pause-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 12px var(--neon); }
 
-  /* Equalizer Bars Canvas */
-  .eq-container { flex: 1; height: 34px; display: flex; align-items: flex-end; gap: 3px; padding-bottom: 2px; border-bottom: 1px solid rgba(57,255,20,0.15); overflow: hidden; }
+  /* Equalizer Bars Panel */
+  .eq-container { display: none; flex: 1; height: 34px; align-items: flex-end; gap: 3px; padding-bottom: 2px; border-bottom: 1px solid rgba(57,255,20,0.15); overflow: hidden; }
+  .eq-container.show { display: flex; }
   .eq-bar { flex: 1; background: var(--neon); height: 3px; transition: height 0.15s ease; border-radius: 1px 1px 0 0; }
   
   /* Animasi Equalizer Aktif */
@@ -177,9 +179,9 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="badge"><div class="badge-dot"></div> AMOGENZ · DOWNLOADER · v4.5</div>
+    <div class="badge"><div class="badge-dot"></div> AMOGENZ · DOWNLOADER · v4.6</div>
     <h1>AMO<span class="accent">DL</span></h1>
-    <p class="sub">// NEO-EQUALIZER ENGINE & ANTI-DUPLICATE RECORD //</p>
+    <p class="sub">// SMART PREVIEW ROUTER & ANTI-DUPLICATE SYSTEM //</p>
   </header>
 
   <div class="nav-tabs">
@@ -213,21 +215,23 @@
       </div>
 
       <div class="section">
-        <div class="sec-label">⚡ LIVE PREVIEW STREAM (CYBER EQUALIZER PANEL)</div>
+        <div class="sec-label">⚡ LIVE PREVIEW STREAM (INTELLIGENT ROUTER)</div>
         <div class="preview-box" id="previewContainer">
           
           <audio id="hiddenAudioPlayer" style="display:none;"></audio>
           
-          <div id="previewStatus" style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">Select format to engage equalizer stream...</div>
+          <div id="previewStatus" style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">Select format to engage preview stream...</div>
           
           <div class="cyber-player" id="cyberPlayerUI">
             <div class="player-main-row">
               <button class="play-pause-btn" id="customPlayBtn" onclick="toggleCyberPlayer()">▶</button>
+              
               <div class="eq-container" id="eqVisualizer">
                 <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
                 <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
                 <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
               </div>
+              
               <div class="time-stamp" id="customTimeTracker">00:00</div>
             </div>
             <video class="video-render-box" id="customVideoBox" playsinline></video>
@@ -279,7 +283,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // FIX ABSOLUT: Generator Key unik berbasis string url asli biar database GAK DUPLIKAT bray
   function generateSafeKey(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -293,7 +296,6 @@
     try {
       const cleanKey = generateSafeKey(url);
       const logRef = ref(db, `downloader_history/${cleanKey}`);
-      
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       const formattedDate = new Date().toLocaleDateString('id-ID', options) + " WIB";
 
@@ -399,17 +401,20 @@ function renderResultCard(data) {
     return;
   }
 
-  // Petakan format baru termasuk split MP3 High dan Standar bray
+  let highMp3Rendered = false;
   data.formats.forEach((fmt, idx) => {
-    // Inject custom MP3 split mapping
+    // FIX SINKRONISASI: Konversi param dari info 'mp3' awal langsung memecah opsi tombol kualitas bray
     if (fmt === 'mp3') {
-      createFormatCard(grid, 'mp3_high', '🎵', 'MP3 Paling Bagus (320k)', idx === 0);
-      createFormatCard(grid, 'mp3_std', '🎧', 'MP3 Standar (128k)', false);
+      if(!highMp3Rendered) {
+        createFormatCard(grid, 'mp3_high', '🎵', 'MP3 Paling Bagus (320k)', idx === 0);
+        createFormatCard(grid, 'mp3_std', '🎧', 'MP3 Standar (128k)', false);
+        highMp3Rendered = true;
+      }
     } else {
       let icon = "🎬"; let label = "Video HD";
       if (fmt === 'video_sd') { icon = "🎞️"; label = "Video SD"; }
       else if (fmt.includes('image')) { icon = "🖼️"; label = "Gambar"; }
-      createFormatCard(grid, fmt, icon, label, idx === 0);
+      createFormatCard(grid, fmt, icon, label, idx === 0 && !highMp3Rendered);
     }
   });
 
@@ -432,23 +437,23 @@ async function selectFormat(fmt, cardEl) {
   
   resetCyberPlayer();
   const statusEl = document.getElementById('previewStatus');
+  const eqEl = document.getElementById('eqVisualizer');
   statusEl.style.display = 'block';
-  statusEl.innerHTML = `<span style="color: var(--neon2); font-size: 11px; font-family: 'Share Tech Mono';">⏳ TUNING EQUALIZER MODULE...</span>`;
+  statusEl.innerHTML = `<span style="color: var(--neon2); font-size: 11px; font-family: 'Share Tech Mono';">⏳ TUNING STREAM MODULE...</span>`;
   
   try {
     const targetUrl = document.getElementById('urlInput').value.trim();
     
-    // Fallback streaming video HD biar gak bisu pas di-preview web
     let formatQuery = fmt;
     if (currentMediaData.platform === 'youtube' && fmt === 'video_hd') {
-      formatQuery = 'video_sd';
+      formatQuery = 'video_sd'; // Video preview HD dialihkan ke gabungan SD biar bersuara bray
     }
 
     const res = await fetch(`/api/download?url=${encodeURIComponent(targetUrl)}&format=${formatQuery}`);
     const streamData = await res.json();
     
     if(!res.ok || !streamData.url) {
-      statusEl.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ Preview restricted. Direct download active.</span>`;
+      statusEl.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ High-res preview restriction. Direct download active.</span>`;
       return;
     }
     
@@ -458,13 +463,16 @@ async function selectFormat(fmt, cardEl) {
     if (fmt.includes('mp3')) {
       audioCore.src = streamData.url;
       videoCore.classList.remove('show');
+      eqEl.classList.add('show'); // Aktifkan panel equalizer khusus MP3 bray
     } else if (fmt.includes('image')) {
       document.getElementById('cyberPlayerUI').classList.remove('show');
       statusEl.style.display = 'block';
       statusEl.innerHTML = `<img src="${streamData.url}" style="max-width:100%; max-height:240px; border-radius:4px;" alt="Preview">`;
     } else {
-      // Jika Video, Audio core dan Video core digabung kontrolnya bray
-      audioCore.src = streamData.url;
+      // MODE VIDEO: Matikan audioCore dan Equalizer biar suara GAK DOUBLE bray
+      audioCore.src = ""; 
+      eqEl.classList.remove('show'); 
+      
       videoCore.src = streamData.url;
       videoCore.classList.add('show');
     }
@@ -473,35 +481,46 @@ async function selectFormat(fmt, cardEl) {
   }
 }
 
-// ── CUSTOM LOGIC CYBERPLAYER CONTROL ──
+// ── CUSTOM INTEGRATED CYBERPLAYER CONTROL ──
 function toggleCyberPlayer() {
   const btn = document.getElementById('customPlayBtn');
   const eq = document.getElementById('eqVisualizer');
   
-  if (audioCore.paused) {
-    audioCore.play();
-    if(videoCore.classList.contains('show')) videoCore.play();
-    btn.textContent = "█";
-    btn.style.color = "var(--neon3)";
-    eq.classList.add('playing');
+  if (videoCore.classList.contains('show')) {
+    // Jalur kontrol pemutaran Video bray
+    if (videoCore.paused) {
+      videoCore.play();
+      btn.textContent = "█"; btn.style.color = "var(--neon3)";
+    } else {
+      videoCore.pause();
+      btn.textContent = "▶"; btn.style.color = "var(--neon)";
+    }
   } else {
-    audioCore.pause();
-    videoCore.pause();
-    btn.textContent = "▶";
-    btn.style.color = "var(--neon)";
-    eq.classList.remove('playing');
+    // Jalur kontrol pemutaran Audio MP3 bray
+    if (audioCore.paused) {
+      audioCore.play();
+      btn.textContent = "█"; btn.style.color = "var(--neon3)";
+      eq.classList.add('playing');
+    } else {
+      audioCore.pause();
+      btn.textContent = "▶"; btn.style.color = "var(--neon)";
+      eq.classList.remove('playing');
+    }
   }
 }
 
-audioCore.ontimeupdate = () => {
-  const m = Math.floor(audioCore.currentTime / 60).toString().padStart(2, '0');
-  const s = Math.floor(audioCore.currentTime % 60).toString().padStart(2, '0');
+// Sinkronisasi time tracker tracker durasi
+function updateTimeUI(currentTime) {
+  const m = Math.floor(currentTime / 60).toString().padStart(2, '0');
+  const s = Math.floor(currentTime % 60).toString().padStart(2, '0');
   document.getElementById('customTimeTracker').textContent = `${m}:${s}`;
-};
+}
 
-audioCore.onended = () => {
-  resetCyberPlayerUIState();
-};
+audioCore.ontimeupdate = () => { if(!videoCore.classList.contains('show')) updateTimeUI(audioCore.currentTime); };
+videoCore.ontimeupdate = () => { if(videoCore.classList.contains('show')) updateTimeUI(videoCore.currentTime); };
+
+audioCore.onended = () => resetCyberPlayerUIState();
+videoCore.onended = () => resetCyberPlayerUIState();
 
 function resetCyberPlayer() {
   audioCore.pause(); audioCore.src = "";
@@ -534,7 +553,7 @@ async function triggerDownload() {
     const url = document.getElementById('urlInput').value.trim();
     const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&format=${selectedFormat}`);
     const data = await res.json();
-    if (!res.ok || !data.url) throw new Error(data.error || "Gagal memproses streaming data.");
+    if (!res.ok || !data.url) throw new Error(data.error || "Gagal memproses file streaming.");
 
     progFill.style.width = '45%';
     btn.innerHTML = '⚡ STREAMING CONTENT DATA TO LOCAL BLOB...';
