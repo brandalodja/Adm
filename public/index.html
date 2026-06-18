@@ -24,17 +24,12 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
+    min-height: 100vh; overflow-x: hidden;
   }
 
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content: ''; position: fixed; inset: 0;
     background-image: linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
     background-size: 40px 40px; pointer-events: none; z-index: 0;
   }
@@ -111,7 +106,6 @@
   .result-card.show { display: block; }
 
   .media-header { padding: 20px; border-bottom: 1px solid var(--border); }
-  .media-meta { min-width: 0; }
   .meta-title { font-size: 15px; font-weight: 600; color: #e8ffe8; margin-bottom: 6px; line-height: 1.4; }
   .meta-platform { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--neon2); letter-spacing: 1px; }
 
@@ -136,10 +130,36 @@
   .dl-btn:hover { background: rgba(57,255,20,0.1); box-shadow: 0 0 22px rgba(57,255,20,0.2); }
   .dl-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  .preview-box { background: #000; border: 1px dashed var(--border-hot); border-radius: 6px; padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 60px; }
-  .preview-box video { width: 100%; max-height: 360px; border-radius: 4px; }
-  .preview-box audio { width: 100%; }
-  .preview-box img { max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 4px; }
+  /* ── CUSTOM CYBERPLAYER & EQUALIZER UI ── */
+  .preview-box { background: #010501; border: 1px dashed var(--border-hot); border-radius: 6px; padding: 12px; min-height: 80px; position: relative; }
+  
+  .cyber-player { width: 100%; display: none; flex-direction: column; gap: 12px; padding: 4px 0; }
+  .cyber-player.show { display: flex; }
+  
+  .player-main-row { display: flex; align-items: center; gap: 14px; }
+  
+  .play-pause-btn {
+    background: rgba(57,255,20,0.1); border: 1px solid var(--neon); width: 42px; height: 42px;
+    border-radius: 50%; color: var(--neon); font-size: 16px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; outline: none; transition: all 0.2s;
+  }
+  .play-pause-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 12px var(--neon); }
+
+  /* Equalizer Bars Canvas */
+  .eq-container { flex: 1; height: 34px; display: flex; align-items: flex-end; gap: 3px; padding-bottom: 2px; border-bottom: 1px solid rgba(57,255,20,0.15); overflow: hidden; }
+  .eq-bar { flex: 1; background: var(--neon); height: 3px; transition: height 0.15s ease; border-radius: 1px 1px 0 0; }
+  
+  /* Animasi Equalizer Aktif */
+  .eq-container.playing .eq-bar:nth-child(2n) { animation: eqJump 0.6s ease-in-out infinite alternate; }
+  .eq-container.playing .eq-bar:nth-child(3n+1) { animation: eqJump 0.8s ease-in-out infinite alternate; }
+  .eq-container.playing .eq-bar:nth-child(4n+2) { animation: eqJump 0.5s ease-in-out infinite alternate; }
+  
+  @keyframes eqJump { 0% { height: 3px; background: var(--neon); } 100% { height: 28px; background: var(--neon2); } }
+
+  .time-stamp { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--neon2); min-width: 75px; text-align: right; }
+  
+  .video-render-box { width: 100%; max-height: 280px; border-radius: 4px; background: #000; display: none; margin-top: 8px; border: 1px solid rgba(57,255,20,0.1); }
+  .video-render-box.show { display: block; }
 
   .history-list { display: flex; flex-direction: column; gap: 12px; }
   .history-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; gap: 14px; align-items: center; }
@@ -157,9 +177,9 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="badge"><div class="badge-dot"></div> AMOGENZ · DOWNLOADER · v4.2</div>
+    <div class="badge"><div class="badge-dot"></div> AMOGENZ · DOWNLOADER · v4.5</div>
     <h1>AMO<span class="accent">DL</span></h1>
-    <p class="sub">// DIRECT STREAM AUDIO SYNCHRONIZER //</p>
+    <p class="sub">// NEO-EQUALIZER ENGINE & ANTI-DUPLICATE RECORD //</p>
   </header>
 
   <div class="nav-tabs">
@@ -193,9 +213,26 @@
       </div>
 
       <div class="section">
-        <div class="sec-label">⚡ LIVE PREVIEW STREAM (AUDIO-VIDEO SYNC)</div>
+        <div class="sec-label">⚡ LIVE PREVIEW STREAM (CYBER EQUALIZER PANEL)</div>
         <div class="preview-box" id="previewContainer">
-          <span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">Select format to render audio/video preview...</span>
+          
+          <audio id="hiddenAudioPlayer" style="display:none;"></audio>
+          
+          <div id="previewStatus" style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">Select format to engage equalizer stream...</div>
+          
+          <div class="cyber-player" id="cyberPlayerUI">
+            <div class="player-main-row">
+              <button class="play-pause-btn" id="customPlayBtn" onclick="toggleCyberPlayer()">▶</button>
+              <div class="eq-container" id="eqVisualizer">
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+              </div>
+              <div class="time-stamp" id="customTimeTracker">00:00</div>
+            </div>
+            <video class="video-render-box" id="customVideoBox" playsinline></video>
+          </div>
+
         </div>
       </div>
 
@@ -227,7 +264,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAWPZ6TvJtFZbhksY3pD57SFAYoJGUDyT0",
@@ -242,11 +279,19 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // LOGIC DETEKSI DUPLIKASI URL DI CLOUD BRAY
+  // FIX ABSOLUT: Generator Key unik berbasis string url asli biar database GAK DUPLIKAT bray
+  function generateSafeKey(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return 'id_' + Math.abs(hash);
+  }
+
   window.saveToFirebaseHistory = async function(title, url, platform) {
     try {
-      // Buat clean key dari base64 url sumber biar gak duplikat
-      const cleanKey = btoa(url).replace(/=/g, '').replace(/\//g, '_').replace(/\+/g, '-');
+      const cleanKey = generateSafeKey(url);
       const logRef = ref(db, `downloader_history/${cleanKey}`);
       
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -291,6 +336,8 @@
 <script>
 let currentMediaData = null;
 let selectedFormat = null;
+const audioCore = document.getElementById('hiddenAudioPlayer');
+const videoCore = document.getElementById('customVideoBox');
 
 function switchPanel(panelName) {
   document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -322,8 +369,8 @@ async function fetchMediaInfo() {
 
   setLoading(true);
   hideError();
+  resetCyberPlayer();
   document.getElementById('resultCard').classList.remove('show');
-  document.getElementById('previewContainer').innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">Select format to render live stream...</span>`;
 
   try {
     const res = await fetch(`/api/info?url=${encodeURIComponent(url)}`);
@@ -352,22 +399,30 @@ function renderResultCard(data) {
     return;
   }
 
+  // Petakan format baru termasuk split MP3 High dan Standar bray
   data.formats.forEach((fmt, idx) => {
-    const card = document.createElement('div');
-    card.className = `fmt-card ${idx === 0 ? 'sel' : ''}`;
-    let icon = "🎬"; let label = "Video HD";
-    if (fmt === 'mp3') { icon = "🎵"; label = "Audio MP3"; }
-    else if (fmt === 'video_sd') { icon = "🎞️"; label = "Video SD"; }
-    else if (fmt.includes('image')) { icon = "🖼️"; label = "Gambar"; }
-
-    card.innerHTML = `<div class="fi">${icon}</div><div class="fb">${fmt.toUpperCase()}</div><div class="fd">${label}</div>`;
-    card.onclick = () => selectFormat(fmt, card);
-    grid.appendChild(card);
-    
-    if (idx === 0) selectFormat(fmt, card);
+    // Inject custom MP3 split mapping
+    if (fmt === 'mp3') {
+      createFormatCard(grid, 'mp3_high', '🎵', 'MP3 Paling Bagus (320k)', idx === 0);
+      createFormatCard(grid, 'mp3_std', '🎧', 'MP3 Standar (128k)', false);
+    } else {
+      let icon = "🎬"; let label = "Video HD";
+      if (fmt === 'video_sd') { icon = "🎞️"; label = "Video SD"; }
+      else if (fmt.includes('image')) { icon = "🖼️"; label = "Gambar"; }
+      createFormatCard(grid, fmt, icon, label, idx === 0);
+    }
   });
 
   document.getElementById('resultCard').classList.add('show');
+}
+
+function createFormatCard(targetGrid, fmtKey, icon, label, isSelect) {
+  const card = document.createElement('div');
+  card.className = `fmt-card ${isSelect ? 'sel' : ''}`;
+  card.innerHTML = `<div class="fi">${icon}</div><div class="fb">${fmtKey.toUpperCase()}</div><div class="fd">${label}</div>`;
+  card.onclick = () => selectFormat(fmtKey, card);
+  targetGrid.appendChild(card);
+  if (isSelect) selectFormat(fmtKey, card);
 }
 
 async function selectFormat(fmt, cardEl) {
@@ -375,29 +430,92 @@ async function selectFormat(fmt, cardEl) {
   document.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('sel'));
   cardEl.classList.add('sel');
   
-  const previewBox = document.getElementById('previewContainer');
-  previewBox.innerHTML = `<span style="color: var(--neon2); font-size: 11px; font-family: 'Share Tech Mono';">⏳ CONNECTING SYSTEM SYNC...</span>`;
+  resetCyberPlayer();
+  const statusEl = document.getElementById('previewStatus');
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = `<span style="color: var(--neon2); font-size: 11px; font-family: 'Share Tech Mono';">⏳ TUNING EQUALIZER MODULE...</span>`;
   
   try {
     const targetUrl = document.getElementById('urlInput').value.trim();
-    const res = await fetch(`/api/download?url=${encodeURIComponent(targetUrl)}&format=${fmt}`);
+    
+    // Fallback streaming video HD biar gak bisu pas di-preview web
+    let formatQuery = fmt;
+    if (currentMediaData.platform === 'youtube' && fmt === 'video_hd') {
+      formatQuery = 'video_sd';
+    }
+
+    const res = await fetch(`/api/download?url=${encodeURIComponent(targetUrl)}&format=${formatQuery}`);
     const streamData = await res.json();
     
     if(!res.ok || !streamData.url) {
-      previewBox.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ Preview unavailable. Direct download button still functional.</span>`;
+      statusEl.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ Preview restricted. Direct download active.</span>`;
       return;
     }
     
-    if (fmt === 'mp3') {
-      previewBox.innerHTML = `<audio controls src="${streamData.url}" preload="metadata"></audio>`;
+    statusEl.style.display = 'none';
+    document.getElementById('cyberPlayerUI').classList.add('show');
+
+    if (fmt.includes('mp3')) {
+      audioCore.src = streamData.url;
+      videoCore.classList.remove('show');
     } else if (fmt.includes('image')) {
-      previewBox.innerHTML = `<img src="${streamData.url}" alt="Preview">`;
+      document.getElementById('cyberPlayerUI').classList.remove('show');
+      statusEl.style.display = 'block';
+      statusEl.innerHTML = `<img src="${streamData.url}" style="max-width:100%; max-height:240px; border-radius:4px;" alt="Preview">`;
     } else {
-      previewBox.innerHTML = `<video controls src="${streamData.url}" preload="metadata" playsinline></video>`;
+      // Jika Video, Audio core dan Video core digabung kontrolnya bray
+      audioCore.src = streamData.url;
+      videoCore.src = streamData.url;
+      videoCore.classList.add('show');
     }
   } catch(e) {
-    previewBox.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ Preview timeout.</span>`;
+    statusEl.innerHTML = `<span style="color: var(--muted); font-size: 11px; font-family: 'Share Tech Mono';">⚠️ Stream module delay.</span>`;
   }
+}
+
+// ── CUSTOM LOGIC CYBERPLAYER CONTROL ──
+function toggleCyberPlayer() {
+  const btn = document.getElementById('customPlayBtn');
+  const eq = document.getElementById('eqVisualizer');
+  
+  if (audioCore.paused) {
+    audioCore.play();
+    if(videoCore.classList.contains('show')) videoCore.play();
+    btn.textContent = "█";
+    btn.style.color = "var(--neon3)";
+    eq.classList.add('playing');
+  } else {
+    audioCore.pause();
+    videoCore.pause();
+    btn.textContent = "▶";
+    btn.style.color = "var(--neon)";
+    eq.classList.remove('playing');
+  }
+}
+
+audioCore.ontimeupdate = () => {
+  const m = Math.floor(audioCore.currentTime / 60).toString().padStart(2, '0');
+  const s = Math.floor(audioCore.currentTime % 60).toString().padStart(2, '0');
+  document.getElementById('customTimeTracker').textContent = `${m}:${s}`;
+};
+
+audioCore.onended = () => {
+  resetCyberPlayerUIState();
+};
+
+function resetCyberPlayer() {
+  audioCore.pause(); audioCore.src = "";
+  videoCore.pause(); videoCore.src = "";
+  resetCyberPlayerUIState();
+  document.getElementById('cyberPlayerUI').classList.remove('show');
+}
+
+function resetCyberPlayerUIState() {
+  const btn = document.getElementById('customPlayBtn');
+  if(btn) { btn.textContent = "▶"; btn.style.color = "var(--neon)"; }
+  const eq = document.getElementById('eqVisualizer');
+  if(eq) eq.classList.remove('playing');
+  document.getElementById('customTimeTracker').textContent = "00:00";
 }
 
 async function triggerDownload() {
@@ -416,13 +534,13 @@ async function triggerDownload() {
     const url = document.getElementById('urlInput').value.trim();
     const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&format=${selectedFormat}`);
     const data = await res.json();
-    if (!res.ok || !data.url) throw new Error(data.error || "Gagal memproses file streaming.");
+    if (!res.ok || !data.url) throw new Error(data.error || "Gagal memproses streaming data.");
 
     progFill.style.width = '45%';
     btn.innerHTML = '⚡ STREAMING CONTENT DATA TO LOCAL BLOB...';
 
     const fileRes = await fetch(data.url);
-    if (!fileRes.ok) throw new Error("Gagal mengunduh stream langsung dari server asal.");
+    if (!fileRes.ok) throw new Error("Gagal mengunduh file langsung dari server asal.");
     
     progFill.style.width = '85%';
     const fileBlob = await fileRes.blob();
